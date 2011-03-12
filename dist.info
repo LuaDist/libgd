@@ -1,0 +1,12 @@
+--- This file is part of LuaDist project
+
+name = "libgd"
+version = "2.0.35"
+arch = "Windows"
+type = "x86"
+
+desc = "GD is an open source code library for the dynamic creation of images by programmers. GD creates PNG, JPEG and GIF images, among other formats."
+author = "Pierre A. Joye"
+license = "as is"
+url = "http://www.libgd.org"
+maintainer = "Peter Drahoš"
