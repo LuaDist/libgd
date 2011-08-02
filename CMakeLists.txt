@@ -1,10 +1,218 @@
-# Copyright (C) 2011 LuaDist.
-# Created by Peter Drahos
-# Redistribution and use of this file is allowed according to the terms of the MIT license.
-# For details see the COPYRIGHT file distributed with LuaDist.
-# Please note that the package source code is licensed under its own license.
+# This is a slightly modified CMakeLists.txt file to suit LuaDist needs. 
 
-PROJECT(libffi C)
+# $Id$
+
+PROJECT(GD)	# LuaDist: do NOT change!
 CMAKE_MINIMUM_REQUIRED(VERSION 2.6)
 
-MESSAGE("Sorry, this package in not at the moment provided by LuaDist in source form.\nPlease use your native system package manager to install libgd-2.0.35.\n On windows or systems lacking any package management install libgd manually.")
+SET(PACKAGE GD)
+SET(PACKAGE_NAME GD)
+SET(CMAKE_MODULE_PATH "${GD_SOURCE_DIR}/cmake/modules")
+
+INCLUDE(dist.cmake)
+
+OPTION(ENABLE_PNG "Enable PNG support" 1)
+OPTION(ENABLE_JPEG "Enable JPEG support" 1)
+OPTION(ENABLE_TIFF "Enable TIFF support" 1)
+OPTION(ENABLE_XPM "Enable XPM support" 1)
+OPTION(ENABLE_FREETYPE "Enable Freetype2 support" 1)
+OPTION(ENABLE_WBMP "Enable WBMP support" 1)
+OPTION(ENABLE_FONTCONFIG "Enable FontConfig support" 1)
+
+if (BUILD_TEST)
+	ENABLE_TESTING()
+endif(BUILD_TEST)
+
+if (NOT WIN32)
+	if(CMAKE_BUILD_TYPE)
+		STRING(TOLOWER ${CMAKE_BUILD_TYPE} CMAKE_BUILD_TYPE_TOLOWER)
+		IF (CMAKE_BUILD_TYPE_TOLOWER MATCHES debug)
+			set(CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG} -Wall -O0")
+		ENDIF (CMAKE_BUILD_TYPE_TOLOWER MATCHES debug)
+	endif(CMAKE_BUILD_TYPE)
+endif (NOT WIN32)
+
+if (USE_EXT_GD)
+	message("Using GD at: ${USE_EXT_GD}")
+	INCLUDE_DIRECTORIES(BEFORE ${GD_INCLUDE_DIR})
+	FIND_PACKAGE(GD)
+	if (GD_FOUND)
+		INCLUDE_DIRECTORIES(BEFORE ${GD_INCLUDE_DIR})
+		LINK_DIRECTORIES(BEFORE ${GD_LIBRARIES})
+		SET(GD_LIB ${GD_LIBRARIES})
+		SET(GD_LIBS_DIR ${GD_LIBRARY})
+
+		message("GD libs #: ${GD_LIBRARIES}")
+		message("GD lib #: ${GD_LIBRARY}")
+		message("GD include: ${GD_INCLUDE_DIR}")
+	else (GD_FOUND)
+		message("No gd found")
+	endif (GD_FOUND)
+else (USE_EXT_GD)
+
+	SET(GD_VERSION_MAJOR "2")
+	SET(GD_VERSION_MINOR "1")
+	SET(GD_VERSION_PATCH "0")
+	SET(GD_VERSION "${GD_VERSION_MAJOR}.${GD_VERSION_MINOR}.${GD_VERSION_PATCH}")
+	SET(GD_VERSION_STRING "${GD_VERSION}")
+
+	SET(GD_VERSION_INT "20100")
+
+	SET(CMAKE_REQUIRED_INCLUDES "/usr/include" "/usr/local/include")
+
+	include(CheckIncludeFiles)
+	include(CheckIncludeFile)
+
+	include(AC_HEADER_STDC)
+	include(CheckPrototypeExists)
+	SET(FONTCONFIG_FIND_QUIETLY, 1)
+
+	message(STATUS "PNG Support: ${ENABLE_PNG}")
+
+	if (ENABLE_PNG)
+		FIND_PACKAGE(PNG REQUIRED)
+	endif (ENABLE_PNG)
+
+	FIND_PACKAGE(ZLIB)
+
+	IF (NOT WIN32)
+		FIND_PACKAGE(PTHREAD)
+	ENDIF (NOT WIN32)
+
+	FIND_PACKAGE(Freetype)
+	FIND_PACKAGE(XPM)
+
+	if (ENABLE_JPEG)
+		FIND_PACKAGE(JPEG)
+	endif (ENABLE_JPEG)
+
+	if (ENABLE_TIFF)
+		FIND_PACKAGE(TIFF)
+	endif (ENABLE_TIFF)
+
+	if (NOT WIN32)
+		FIND_PACKAGE(PTHREAD)
+	endif (NOT WIN32)
+
+	if (ENABLE_FREETYPE)
+		FIND_PACKAGE(Freetype)
+	endif (ENABLE_FREETYPE)
+
+	if (ENABLE_XPM)
+		FIND_PACKAGE(XPM)
+	endif (ENABLE_XPM)
+
+	if (ENABLE_FONTCONFIG)
+		FIND_PACKAGE(Fontconfig)
+	endif (ENABLE_FONTCONFIG)
+
+	if (FREETYPE_FOUND)
+		INCLUDE_DIRECTORIES(${FREETYPE_INCLUDE_DIR})
+		SET(HAVE_FT2BUILD_H 1)
+		SET(HAVE_LIBFREETYPE 1)
+	ENDIF(FREETYPE_FOUND)
+
+	IF(ZLIB_FOUND)
+		INCLUDE_DIRECTORIES(${PNG_INCLUDE_DIR})
+		SET(HAVE_LIBZ 1)
+		SET(HAVE_LIBPNG_PNG_H 1)
+	ENDIF(ZLIB_FOUND)
+
+	IF(PNG_FOUND)
+		INCLUDE_DIRECTORIES(${PNG_INCLUDE_DIR})
+		SET(HAVE_LIBPNG 1)
+	ENDIF(PNG_FOUND)
+
+	IF(XPM_FOUND)
+		INCLUDE_DIRECTORIES(${XPM_INCLUDE_DIR})
+		SET(HAVE_LIBXPM 1)
+	ENDIF(XPM_FOUND)
+
+	IF(JPEG_FOUND)
+		INCLUDE_DIRECTORIES(${JPEG_INCLUDE_DIR})
+		SET(HAVE_LIBJPEG 1)
+	ENDIF(JPEG_FOUND)
+
+	IF(TIFF_FOUND)
+		INCLUDE_DIRECTORIES(${TIFF_INCLUDE_DIR})
+		SET(HAVE_LIBTIFF 1)
+	ENDIF(TIFF_FOUND)
+
+	IF(FONTCONFIG_FOUND)
+		INCLUDE_DIRECTORIES(${FONTCONFIG_INCLUDE_DIR})
+		SET(HAVE_LIBFONTCONFIG 1)
+	ELSE (FONTCONFIG_FOUND)
+		SET(FONTCONFIG_LIBRARIES "")
+		SET(FONTCONFIG_INCLUDE_DIR "")
+		SET(FONTCONFIG_LIB_DIR "")
+	ENDIF(FONTCONFIG_FOUND)
+
+	SET(HAVE_CONFIG_H 1)
+
+	ADD_DEFINITIONS(-DHAVE_CONFIG_H)
+
+	CONFIGURE_FILE(${GD_SOURCE_DIR}/src/config.h.cmake ${CMAKE_BINARY_DIR}/config.h ESCAPE_QUOTES)
+
+	set(BUILD_SHARED_LIBS On)
+
+	if (WIN32)
+		SET(GD_LIB bgd)
+		ADD_DEFINITIONS( -DWIN32 -D_WIN32 -DMSWIN32 -DBGDWIN32 -DWINVER=0x0500  -D_WIN32_WINNT=0x0500 -D_WIN32_IE=0x0600)
+
+		if(NOT MINGW AND MSVC_VERSION GREATER 1399)
+			ADD_DEFINITIONS("/D_CRT_SECURE_NO_DEPRECATE")
+		endif(NOT MINGW AND MSVC_VERSION GREATER 1399)
+		if (MINGW OR MSYS)
+			ADD_DEFINITIONS("-mms-bitfields -m32")
+		endif (MINGW OR MSYS)
+	else (WIN32)
+		SET(GD_LIB gd)
+	endif (WIN32)
+
+	SET(GD_LIB_STATIC "${GD_LIB}-static")
+
+	IF(PROFILE)
+		add_definitions("-pg")
+		set(CMAKE_EXE_LINKER_FLAGS ${LINK_FLAGS} "-pg")
+	ENDIF(PROFILE)
+
+	SET(GD_INCLUDE_DIR "${GD_SOURCE_DIR}/src" "${GD_SOURCE_DIR}")
+	INCLUDE_DIRECTORIES(before ${FONTCONFIG_INCLUDE_DIR})
+
+	add_subdirectory(src)
+endif (USE_EXT_GD)
+
+add_subdirectory(tests)
+add_subdirectory(examples)
+
+
+SET(CPACK_PACKAGE_NAME "libgd")
+SET(CPACK_PACKAGE_DESCRIPTION_SUMMARY "libGD, powerful and easy to use graphic library")
+SET(CPACK_PACKAGE_VENDOR "http://www.libgd.org")
+SET(CPACK_PACKAGE_VERSION_MAJOR "2")
+SET(CPACK_PACKAGE_VERSION_MINOR "1")
+SET(CPACK_PACKAGE_VERSION_PATCH "0")
+
+if(WIN32)
+	set(CPACK_GENERATOR ZIP)
+else(WIN32)
+	set(CPACK_GENERATOR TGZ)
+endif(WIN32)
+
+
+set(CPACK_SOURCE_GENERATOR TGZ)
+set(CPACK_SOURCE_IGNORE_FILES
+"~$"
+"\\\\.swp$"
+"\\\\.cvsignore$"
+"^${PROJECT_SOURCE_DIR}.*/CVS/"
+"^${PROJECT_SOURCE_DIR}/debian/"
+"^${PROJECT_SOURCE_DIR}/old/"
+"^${PROJECT_SOURCE_DIR}/bld/"
+"^${PROJECT_SOURCE_DIR}/autom4te\\\\.cache/"
+)
+#~ install(FILES ${top_level_DOCFILES} DESTINATION ${DOC_DIR})	# LuaDist: ???
+INCLUDE(CPack)
+
+# LuaDist: install additional stuff
+install(FILES ChangeLog NEWS docs/README.TXT docs/README-JPEG.TXT docs/README.JPN docs/README.TESTING DESTINATION ${INSTALL_DOC})
