@@ -89,9 +89,9 @@ endforeach(program)
 install(TARGETS ${GD_LIB}  ${GD_PROGRAMS} # ${GD_LIB_STATIC} # LuaDist: we  build only dynamic
         RUNTIME DESTINATION ${INSTALL_BIN} 
 	LIBRARY DESTINATION ${INSTALL_LIB} 
-	ARCHIVE DESTINATION ${INSTALL_BIN})	
+	ARCHIVE DESTINATION ${INSTALL_LIB})	
 
-install(PROGRAMS bdftogd DESTINATION ${INSTALL_BIN})
+install(PROGRAMS bdftogd DESTINATION ${INSTALL_FOO})
 install(FILES gd.h gdfx.h gd_io.h gdcache.h gdfontg.h gdfontl.h gdfontmb.h gdfonts.h gdfontt.h gd_color_map.h DESTINATION ${INSTALL_INC})
 
 # LuaDist: install additional stuff
