@@ -4,14 +4,13 @@
 
 PROJECT(gd)	# LuaDist: do NOT change!
 CMAKE_MINIMUM_REQUIRED(VERSION 2.6)
+include ( cmake/dist.cmake )
 
 SET(GD_SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR})
 
 SET(PACKAGE GD)
 SET(PACKAGE_NAME GD)
 SET(CMAKE_MODULE_PATH "${GD_SOURCE_DIR}/cmake/modules")
-
-INCLUDE(dist.cmake)
 
 OPTION(ENABLE_PNG "Enable PNG support" 1)
 OPTION(ENABLE_JPEG "Enable JPEG support" 1)
@@ -217,4 +216,4 @@ set(CPACK_SOURCE_IGNORE_FILES
 INCLUDE(CPack)
 
 # LuaDist: install additional stuff
-install(FILES ChangeLog NEWS docs/README.TXT docs/README-JPEG.TXT docs/README.JPN docs/README.TESTING DESTINATION ${INSTALL_DOC})
+install_doc ( ChangeLog NEWS docs/README.TXT docs/README-JPEG.TXT docs/README.JPN docs/README.TESTING )
