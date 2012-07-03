@@ -4,14 +4,14 @@ SET(TESTS_FILES
 #  resize
 #  ellipseaa
 #  ellipse
-  arc
 #  ellipsearc
-  crop
 #  ellfullaa
-  tgaread
  # nnquant
   gif
 )
+if (PNG_FOUND)
+  set (TESTS_FILES "${TESTS_FILES}" arc crop tgaread)
+endif ()
 
 if (JPEG_FOUND)
 	SET(TESTS_FILES
