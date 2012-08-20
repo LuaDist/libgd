@@ -1,54 +1,41 @@
-include_directories (BEFORE "${GD_SOURCE_DIR}/src" "${CMAKE_BINARY_DIR}")
+include_directories ( BEFORE "${GD_SOURCE_DIR}/src" "${CMAKE_BINARY_DIR}" )
 
-SET(TESTS_FILES
-#  resize
-#  ellipseaa
-#  ellipse
-  arc
-#  ellipsearc
-  crop
-#  ellfullaa
-  tgaread
- # nnquant
-  gif
-)
+set ( TESTS_FILES #  resize
+  #  ellipseaa
+  #  ellipse
+  #  ellipsearc
+  #  ellfullaa
+  # nnquant
+  gif )
+if ( PNG_FOUND )
+  set ( TESTS_FILES "${TESTS_FILES}" arc crop tgaread )
+endif ( )
 
-if (JPEG_FOUND)
-	SET(TESTS_FILES
-		"${TESTS_FILES}"
-		nnquant
-		copyrotated
-		flip
-	)
-endif (JPEG_FOUND)
+if ( JPEG_FOUND )
+  set ( TESTS_FILES "${TESTS_FILES}" nnquant copyrotated flip )
+endif ( JPEG_FOUND )
 
+if ( TIFF_FOUND )
+  set ( TESTS_FILES "${TESTS_FILES}" tiffread )
+endif ( TIFF_FOUND )
 
-if (TIFF_FOUND)
-	SET(TESTS_FILES
-		"${TESTS_FILES}"
-		tiffread
-	)
-endif (TIFF_FOUND)
-
-FOREACH(test_name ${TESTS_FILES})
-	add_executable(${test_name} "${test_name}.c")
-	target_link_libraries (${test_name} ${GD_LIB})
-	
+foreach ( test_name ${TESTS_FILES} )
+	add_executable ( ${test_name} "${test_name}.c" )
+	target_link_libraries ( ${test_name} ${GD_LIB} )
 	# LuaDist: added instalation of examples:
-	install(TARGETS ${test_name} RUNTIME DESTINATION ${INSTALL_EXAMPLE} LIBRARY DESTINATION ${INSTALL_EXAMPLE} ARCHIVE DESTINATION ${INSTALL_EXAMPLE})
-ENDFOREACH(test_name)
+	install ( TARGETS ${test_name} DESTINATION ${INSTALL_EXAMPLE} COMPONENT Example )
+endforeach ( test_name )
 
-if (WIN32 AND NOT MINGW AND NOT MSYS)
-	add_executable(windows WIN32 "windows.c")
-	target_link_libraries (windows ${GD_LIB})
-else (WIN32 AND NOT MINGW AND NOT MSYS)
-	if (MINGW OR MSYS)
-		add_executable(windows "windows.c")
-		add_definitions("-mwindows")
-		target_link_libraries(windows ${GD_LIB} stdc++ gdi32)
-	endif (MINGW OR MSYS)
-endif (WIN32 AND NOT MINGW AND NOT MSYS)
-
+if ( WIN32 AND NOT MINGW AND NOT MSYS )
+  add_executable ( windows WIN32 "windows.c" )
+  target_link_libraries ( windows ${GD_LIB} )
+else ( WIN32 AND NOT MINGW AND NOT MSYS )
+  if ( MINGW OR MSYS )
+    add_executable ( windows "windows.c" )
+    add_definitions ( "-mwindows" )
+    target_link_libraries ( windows ${GD_LIB} stdc++ gdi32 )
+  endif ( MINGW OR MSYS )
+endif ( WIN32 AND NOT MINGW AND NOT MSYS )
 
 # LuaDist: install sample images
-install(FILES noIcon.pic test_crop_threshold.png noIcon.sgi noIcon.tga noIconAlpha.tga DESTINATION ${INSTALL_EXAMPLE})
+install_example ( noIcon.pic test_crop_threshold.png noIcon.sgi noIcon.tga noIconAlpha.tga  )

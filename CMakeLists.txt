@@ -187,26 +187,7 @@ endif ( USE_EXT_GD )
 add_subdirectory ( tests )
 add_subdirectory ( examples )
 
-set ( CPACK_PACKAGE_NAME "libgd" )
-set ( CPACK_PACKAGE_DESCRIPTION_SUMMARY "libGD, powerful and easy to use graphic library" )
-set ( CPACK_PACKAGE_VENDOR "http://www.libgd.org" )
-set ( CPACK_PACKAGE_VERSION_MAJOR "2" )
-set ( CPACK_PACKAGE_VERSION_MINOR "1" )
-set ( CPACK_PACKAGE_VERSION_PATCH "0" )
+install_doc ( ${top_level_DOCFILES} )
 
-if ( WIN32 )
-  set ( CPACK_GENERATOR ZIP )
-else ( WIN32 )
-  set ( CPACK_GENERATOR TGZ )
-endif ( WIN32 )
-
-set ( CPACK_SOURCE_GENERATOR TGZ )
-set ( CPACK_SOURCE_IGNORE_FILES "~$" "\\\\.swp$" "\\\\.cvsignore$" "^${PROJECT_SOURCE_DIR}.*/CVS/" 
-  "^${PROJECT_SOURCE_DIR}/debian/" "^${PROJECT_SOURCE_DIR}/old/" "^${PROJECT_SOURCE_DIR}/bld/" 
-  "^${PROJECT_SOURCE_DIR}/autom4te\\\\.cache/" )
-#~ install(FILES ${top_level_DOCFILES} DESTINATION ${DOC_DIR})	# LuaDist: ???
-include ( CPack )
-
-# LuaDist: install additional stuff
 install_data ( ChangeLog NEWS docs/README.TXT docs/README-JPEG.TXT docs/README.JPN 
   docs/README.TESTING )
