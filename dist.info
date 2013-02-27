@@ -1,0 +1,75 @@
+type = "x86_64"
+arch = "Ubuntu"
+author = "Pierre A. Joye"
+depends = {
+[[libjpeg >= 8]],
+[[libpng >= 1.4.1]],
+[[libtiff >= 3.8.2]],
+}
+
+desc = "GD is an open source code library for the dynamic creation of images by programmers. GD creates PNG, JPEG and GIF images, among other formats."
+version = "2.1"
+maintainer = "Peter Kapec"
+files = {
+Runtime = {
+[[bin/annotate]],
+[[bin/gdparttopng]],
+[[bin/gdtopng]],
+[[bin/gd2copypal]],
+[[bin/gd2topng]],
+[[bin/pngtogd]],
+[[bin/pngtogd2]],
+[[bin/webpng]],
+[[bin/gd2togif]],
+[[bin/gdcmpgif]],
+[[bin/giftogd2]],
+[[lib/libgd.so]],
+}
+,
+Header = {
+[[include/gd.h]],
+[[include/gdfx.h]],
+[[include/gd_io.h]],
+[[include/gdcache.h]],
+[[include/gdfontg.h]],
+[[include/gdfontl.h]],
+[[include/gdfontmb.h]],
+[[include/gdfonts.h]],
+[[include/gdfontt.h]],
+[[include/gd_color_map.h]],
+}
+,
+Documentation = {
+[[share/libgd/doc/entities.html]],
+}
+,
+Data = {
+[[share/libgd/ChangeLog]],
+[[share/libgd/NEWS]],
+[[share/libgd/README.TXT]],
+[[share/libgd/README-JPEG.TXT]],
+[[share/libgd/README.JPN]],
+[[share/libgd/README.TESTING]],
+}
+,
+Example = {
+[[share/libgd/example/gif]],
+[[share/libgd/example/arc]],
+[[share/libgd/example/crop]],
+[[share/libgd/example/tgaread]],
+[[share/libgd/example/nnquant]],
+[[share/libgd/example/copyrotated]],
+[[share/libgd/example/flip]],
+[[share/libgd/example/tiffread]],
+[[share/libgd/example/noIcon.pic]],
+[[share/libgd/example/test_crop_threshold.png]],
+[[share/libgd/example/noIcon.sgi]],
+[[share/libgd/example/noIcon.tga]],
+[[share/libgd/example/noIconAlpha.tga]],
+}
+,
+}
+
+license = "as is"
+name = "libgd"
+url = "http://www.libgd.org"
